@@ -18,11 +18,14 @@ jobs:
           POSTGRES_USER: root
           POSTGRES_PASSWORD: secret
           POSTGRES_DB: simple_bank
+
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        port:
+          - 5432:5432
 
     steps:
       - uses: actions/checkout@v3
@@ -33,7 +36,10 @@ jobs:
           go-version: 1.18
 
       - name: Set up golang-migrate
-        run: curl -L https://github.com/golang-migrate/migrate/releases/download/$version/migrate.$platform-amd64.tar.gz | tar xvz
+        run: |
+          curl -L https://github.com/golang-migrate/migrate/releases/download/v4.15.2/migrate.linux-amd64.tar.gz | tar xvz
+          sudo mv migrate /usr/bin
+          which migrate
 
       - name: Run migrations
         run: make migrateup
